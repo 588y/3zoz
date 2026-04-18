@@ -205,31 +205,38 @@
     function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
     function checkUpload() { document.getElementById('proc-btn').disabled = !document.getElementById('receipt').files.length; }
 
-    function startProcessing() {
+function startProcessing() {
         const isAr = document.documentElement.lang === 'ar';
         const refId = "REF-" + Math.random().toString(36).substr(2, 8).toUpperCase();
-        const buyerCode = "911-" + Math.random().toString(36).substr(2, 10).toUpperCase();
+        
+        // تجهيز بيانات الـ Issue لفتحها في صفحة جديدة (تنبيه فقط)
+        const issueTitle = encodeURIComponent(`New Payment Notification: ${refId}`);
+        const issueBody = encodeURIComponent(`### 📢 إشعار دفع جديد\n\n**الخطة:** ${selectedPlan}\n**السعر:** ${selectedPrice} SAR\n**رقم المرجع:** ${refId}\n\n**حالة الطلب:** بانتظار العميل لفتح تكت وإرسال الصورة في ديسكورد.`);
 
-        // تجهيز بيانات الـ Issue لفتحها في صفحة جديدة (بدون توكن)
-        const issueTitle = encodeURIComponent(`Order: ${refId}`);
-        const issueBody = encodeURIComponent(`### 🛒 New Order Details\n\n**Plan:** ${selectedPlan}\n**Price:** ${selectedPrice} SAR\n**Reference:** ${refId}\n**Generated License:** \`${buyerCode}\``);
-
+        // رابط لفتح الـ Issue في مستودعك
         const githubIssueUrl = `https://github.com/${OWNER}/${REPO}/issues/new?title=${issueTitle}&body=${issueBody}`;
 
-        // فتح صفحة الـ Issue للمشتري ليضغط Submit فقط
+        // فتح صفحة الـ Issue للمشتري ليضغط Submit
         window.open(githubIssueUrl, '_blank');
 
-        // إظهار النتائج في الصفحة الحالية
+        // إظهار تعليمات التكت للمشتري في الصفحة
         document.getElementById('ref-id').innerText = refId;
         
-        const licenseBox = document.getElementById('license-display');
-        licenseBox.innerHTML = `
-            <p style="font-size:0.8rem; color:var(--text-dim);">${isAr ? 'كود التفعيل الخاص بك:' : 'Your License Key:'}</p>
-            <code style="color:#34d399; font-size:1.2rem; font-weight:bold;">${buyerCode}</code>
+        const successMsg = document.getElementById('success-msg');
+        successMsg.innerHTML = `
+            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+            <h3>${isAr ? 'تم تسجيل طلبك!' : 'Request Logged!'}</h3>
+            <span class="ref-badge">${refId}</span>
+            <p style="margin: 15px 0; color: #94a3b8; line-height: 1.6;">
+                ${isAr ? 'يرجى التوجه لسيرفر الديسكورد وفتح "تكت" وإرسال صورة التحويل مع رقم المرجع الموضح أعلاه.' : 'Please go to Discord, open a ticket, and send the transfer receipt with the Ref ID shown above.'}
+            </p>
+            <a href="https://discord.gg/5-5" class="btn" style="background:#5865F2; text-decoration:none; display:block; margin-top:20px;">
+                ${isAr ? 'انتقل للديسكورد (فتح تكت)' : 'Go to Discord (Open Ticket)'}
+            </a>
         `;
 
         document.getElementById('pay-flow').style.display = 'none';
-        document.getElementById('success-msg').style.display = 'block';
+        successMsg.style.display = 'block';
     }
 
     window.onclick = (e) => { if (e.target.className === 'modal') closeModal(); }
