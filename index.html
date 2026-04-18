@@ -136,17 +136,12 @@
                 <img src="https://raw.githubusercontent.com/588y/3zoz/refs/heads/main/IBAN.png" alt="Bank Info">
                 <div class="iban-box" onclick="copyIBAN()">SA55 8000 0277 6080 1978 5415</div>
             </div>
-            <input type="file" id="receipt" accept="image/*" onchange="checkUpload()">
-            <button id="proc-btn" class="btn" disabled onclick="startProcessing()" data-en="Confirm Payment" data-ar="تأكيد عملية الدفع">Confirm Payment</button>
+            
+            <button id="proc-btn" class="btn" onclick="startProcessing()" data-en="Confirm Payment" data-ar="تأكيد عملية الدفع">Confirm Payment</button>
         </div>
 
-        <div id="success-msg">
-            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
-            <h3 data-en="Payment Logged!" data-ar="تم تسجيل الدفع!">Payment Logged!</h3>
-            <span id="ref-id" class="ref-badge">REF-911-XXXX</span>
-            <div id="license-display" style="margin-top:15px; border-top:1px solid #1e293b; padding-top:10px;"></div>
-            <a href="https://discord.gg/5-5" class="btn" style="background:#5865F2; text-decoration:none; display:block; margin-top:20px;" data-en="Open Support Ticket" data-ar="افتح تذكرة دعم">Open Support Ticket</a>
-        </div>
+        <div id="success-msg" style="display: none; text-align: center;">
+            </div>
     </div>
 </div>
 
@@ -206,38 +201,27 @@
     function checkUpload() { document.getElementById('proc-btn').disabled = !document.getElementById('receipt').files.length; }
 
 function startProcessing() {
-        const isAr = document.documentElement.lang === 'ar';
-        // توليد رقم مرجع مميز للطلب لسهولة المراجعة في التكت
-        const refId = "911-" + Math.random().toString(36).substr(2, 8).toUpperCase();
+    const isAr = document.documentElement.lang === 'ar';
+    const successMsg = document.getElementById('success-msg');
 
-        // تحديث واجهة المستخدم لإظهار التعليمات
-        document.getElementById('ref-id').innerText = refId;
-        
-        const successMsg = document.getElementById('success-msg');
-        successMsg.innerHTML = `
-            <div style="font-size: 50px; margin-bottom: 10px;">⏳</div>
-            <h3 style="color: #f8fafc; margin-bottom: 10px;">
-                ${isAr ? 'الخطوة الأخيرة!' : 'Final Step!'}
-            </h3>
-            <div style="background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #3b82f6; margin-bottom: 20px;">
-                <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">${isAr ? 'رقم مرجع الطلب:' : 'Your Order Ref:'}</p>
-                <code style="font-size: 1.3rem; color: #34d399; font-weight: 800; letter-spacing: 1px;">${refId}</code>
-            </div>
-            <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 25px;">
-                ${isAr ? 'من فضلك أرسل صورة الإيصال (التحويل) مع رقم المرجع أعلاه عبر تكت في سيرفر الديسكورد.' : 'Please send the transfer receipt along with the Ref ID above via a ticket in our Discord server.'}
-            </p>
-            <a href="https://discord.gg/5-5" target="_blank" class="btn" style="background:#5865F2; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20" style="filter: brightness(0) invert(1);">
-                ${isAr ? 'انتقل إلى الديسكورد' : 'Go to Discord'}
-            </a>
-        `;
+    successMsg.innerHTML = `
+        <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
+        <h3 style="color: #f8fafc; margin-bottom: 15px;">
+            ${isAr ? 'تأكيد الدفع' : 'Payment Confirmation'}
+        </h3>
+        <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 25px; font-size: 1rem;">
+            ${isAr ? 'لأسباب أمنية يرجى فتح تكت في الديسكورد وإرسال صورة الإيصال هناك، وسيقوم فريق العمل بتسليمك المنتج فوراً.' : 'For security reasons, please open a ticket on Discord and send your receipt there. Our team will deliver your product immediately.'}
+        </p>
+        <a href="https://discord.gg/5-5" target="_blank" class="btn" style="background:#5865F2; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20" style="filter: brightness(0) invert(1);">
+            ${isAr ? 'فتح تكت في الديسكورد' : 'Open Ticket on Discord'}
+        </a>
+    `;
 
-        // إخفاء نموذج الدفع وإظهار رسالة التوجيه
-        document.getElementById('pay-flow').style.display = 'none';
-        successMsg.style.display = 'block';
-    }
-
-    window.onclick = (e) => { if (e.target.className === 'modal') closeModal(); }
+    // تبديل الواجهة
+    document.getElementById('pay-flow').style.display = 'none';
+    successMsg.style.display = 'block';
+}
 </script>
 
 </body>
