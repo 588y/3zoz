@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>911 System | Professional Software Distribution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Noto+Kufi+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        (function() {
+            const savedLang = localStorage.getItem('preferredLang');
+            const browserLang = navigator.language || navigator.userLanguage;
+            const lang = savedLang || (browserLang.startsWith('ar') ? 'ar' : 'en');
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+        })();
+    </script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --accent: #60a5fa;
+            --bg: #020617;
+            --card: #0f172a;
+            --border: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', 'Noto Kufi Arabic', sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center; padding: 20px 0;
+            position: sticky; top: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px);
+            z-index: 1000; border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a, .lang-btn {
+            text-decoration: none; color: var(--text-dim); font-size: 0.9rem; font-weight: 600;
+            transition: 0.3s; cursor: pointer; background: none; border: none;
+        }
+        .nav-links a:hover, .lang-btn:hover { color: var(--primary); }
+
+        section { display: none; padding: 80px 0; animation: slideUp 0.5s ease forwards; }
+        section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hero { text-align: center; margin-bottom: 60px; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 15px; font-weight: 800; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .card {
+            background: var(--card); border: 1px solid var(--border); padding: 40px;
+            border-radius: 30px; text-align: center; transition: 0.4s; position: relative;
+        }
+        .card:hover { border-color: var(--primary); transform: translateY(-10px); box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1); }
+        .price { font-size: 3rem; font-weight: 800; margin: 20px 0; display: block; }
+        .cur-sym { font-size: 1.2rem; color: var(--primary); margin-left: 8px; }
+
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 2000; backdrop-filter: blur(10px); overflow-y: auto;
+        }
+        .modal-content {
+            background: var(--card); max-width: 500px; margin: 40px auto; padding: 40px;
+            border-radius: 32px; border: 1px solid var(--border); position: relative;
+        }
+        .bank-details { background: #1e293b; padding: 25px; border-radius: 20px; margin: 20px 0; border: 1px dashed var(--primary); }
+        .bank-details img { width: 100%; border-radius: 12px; margin-bottom: 15px; }
+        .iban-box { background: #020617; padding: 12px; border-radius: 10px; font-family: monospace; color: #34d399; font-size: 0.9rem; word-break: break-all; cursor: pointer; }
+
+        .btn {
+            width: 100%; padding: 16px; background: var(--primary); color: white; border: none;
+            border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .btn:disabled { background: #334155; opacity: 0.6; cursor: not-allowed; }
+        input[type="file"] { margin: 15px 0; color: var(--text-dim); font-size: 0.8rem; width: 100%; }
+
+        #success-msg { display: none; text-align: center; }
+        .ref-badge { background: #1e293b; color: white; padding: 15px; border-radius: 12px; font-size: 1.2rem; font-weight: 800; margin: 15px 0; border: 1px solid #34d399; display: block; }
+
+        .legal-box { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--border); }
+        .legal-box h2 { color: var(--primary); margin: 30px 0 15px; }
+        .legal-box p { color: var(--text-dim); margin-bottom: 15px; line-height: 1.8; }
+
+        footer { text-align: center; padding: 60px 0; color: var(--text-dim); font-size: 0.8rem; border-top: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <div class="logo">911 SYSTEM</div>
+        <div class="nav-links">
+            <a href="#home" onclick="showSection('home')" data-en="Store" data-ar="المتجر">Store</a>
+            <a href="#terms" onclick="showSection('terms')" data-en="Terms" data-ar="الشروط">Terms</a>
+            <a href="#privacy" onclick="showSection('privacy')" data-en="Privacy" data-ar="الخصوصية">Privacy</a>
+            <a href="#refund" onclick="showSection('refund')" data-en="Refunds" data-ar="الاسترداد">Refunds</a>
+            <button onclick="toggleLang()" class="lang-btn" id="langBtn">العربية</button>
+        </div>
+    </nav>
+
+    <section id="home">
+        <div class="hero">
+            <h1 data-en="Elite Software Hub" data-ar="مركز البرمجيات المتقدم">Elite Software Hub</h1>
+            <p data-en="Professional tools with automated delivery systems." data-ar="أدوات احترافية مع أنظمة تسليم تلقائية."></p>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3 data-en="Standard Plan" data-ar="الخطة الأساسية">Standard Plan</h3>
+                <span class="price">55 <span class="cur-sym">SAR</span></span>
+                <button class="btn" data-en="Get Started" data-ar="ابدأ الآن" onclick="openPayment('Standard License', 55)">Get Started</button>
+            </div>
+            <div class="card" style="border-color: var(--primary);">
+                <h3 data-en="Professional Plan" data-ar="الخطة الاحترافية">Professional Plan</h3>
+                <span class="price">150 <span class="cur-sym">SAR</span></span>
+                <button class="btn" data-en="Upgrade Now" data-ar="ترقية الآن" onclick="openPayment('Professional License', 150)">Upgrade Now</button>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 911 System Hub.</p></footer>
+</div>
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" style="position:absolute; right:30px; top:25px; cursor:pointer; font-size:24px;">&times;</span>
+        <h2 id="m-title" style="margin-bottom:10px;" data-en="Secure Checkout" data-ar="دفع آمن">Secure Checkout</h2>
+        
+        <div id="pay-flow">
+            <p style="color:var(--primary); font-weight:700; margin-bottom:15px;" data-en="Step 1: Bank Transfer" data-ar="الخطوة 1: تحويل بنكي">Step 1: Bank Transfer</p>
+            <div class="bank-details">
+                <img src="https://raw.githubusercontent.com/588y/3zoz/refs/heads/main/IBAN.png" alt="Bank Info">
+                <div class="iban-box" onclick="copyIBAN()">SA55 8000 0277 6080 1978 5415</div>
+            </div>
+            <input type="file" id="receipt" accept="image/*" onchange="checkUpload()">
+            <button id="proc-btn" class="btn" disabled onclick="startProcessing()" data-en="Confirm Payment" data-ar="تأكيد عملية الدفع">Confirm Payment</button>
+        </div>
+
+        <div id="success-msg">
+            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+            <h3 data-en="Payment Logged!" data-ar="تم تسجيل الدفع!">Payment Logged!</h3>
+            <span id="ref-id" class="ref-badge">REF-911-XXXX</span>
+            <div id="license-display" style="margin-top:15px; border-top:1px solid #1e293b; padding-top:10px;"></div>
+            <a href="https://discord.gg/5-5" class="btn" style="background:#5865F2; text-decoration:none; display:block; margin-top:20px;" data-en="Open Support Ticket" data-ar="افتح تذكرة دعم">Open Support Ticket</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- إعدادات GitHub الآمنة ---
+    const OWNER = "588y";
+    const REPO = "3zoz";
+
+    function updateLanguageUI(lang) {
+        const isAr = lang === 'ar';
+        document.body.dir = isAr ? 'rtl' : 'ltr';
+        document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+        document.getElementById('langBtn').innerText = isAr ? 'English' : 'العربية';
+        document.querySelectorAll('[data-en]').forEach(el => {
+            el.innerText = isAr ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+        });
+        localStorage.setItem('preferredLang', lang);
+    }
+
+    function toggleLang() {
+        const newLang = document.body.dir === 'rtl' ? 'en' : 'ar';
+        updateLanguageUI(newLang);
+    }
+
+    function showSection(id) {
+        const sections = document.querySelectorAll('section');
+        sections.forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(id) || document.getElementById('home');
+        target.classList.add('active');
+        if(window.location.hash !== '#' + id) history.pushState(null, null, '#' + id);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        updateLanguageUI(document.documentElement.lang || 'en');
+        showSection(window.location.hash.replace('#','') || 'home');
+    });
+
+    function copyIBAN() {
+        navigator.clipboard.writeText("SA55 8000 0277 6080 1978 5415");
+        alert(document.documentElement.lang === 'ar' ? "تم نسخ الآيبان!" : "IBAN Copied!");
+    }
+
+    let selectedPlan = "";
+    let selectedPrice = 0;
+
+    function openPayment(name, price) {
+        selectedPlan = name;
+        selectedPrice = price;
+        document.getElementById('m-title').innerText = name + " - " + price + " SAR";
+        document.getElementById('paymentModal').style.display = 'block';
+        document.getElementById('pay-flow').style.display = 'block';
+        document.getElementById('success-msg').style.display = 'none';
+        document.getElementById('receipt').value = '';
+    }
+
+    function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
+    function checkUpload() { document.getElementById('proc-btn').disabled = !document.getElementById('receipt').files.length; }
+
+    function startProcessing() {
+        const isAr = document.documentElement.lang === 'ar';
+        const refId = "REF-" + Math.random().toString(36).substr(2, 8).toUpperCase();
+        const buyerCode = "911-" + Math.random().toString(36).substr(2, 10).toUpperCase();
+
+        // تجهيز بيانات الـ Issue لفتحها في صفحة جديدة (بدون توكن)
+        const issueTitle = encodeURIComponent(`Order: ${refId}`);
+        const issueBody = encodeURIComponent(`### 🛒 New Order Details\n\n**Plan:** ${selectedPlan}\n**Price:** ${selectedPrice} SAR\n**Reference:** ${refId}\n**Generated License:** \`${buyerCode}\``);
+
+        const githubIssueUrl = `https://github.com/${OWNER}/${REPO}/issues/new?title=${issueTitle}&body=${issueBody}`;
+
+        // فتح صفحة الـ Issue للمشتري ليضغط Submit فقط
+        window.open(githubIssueUrl, '_blank');
+
+        // إظهار النتائج في الصفحة الحالية
+        document.getElementById('ref-id').innerText = refId;
+        
+        const licenseBox = document.getElementById('license-display');
+        licenseBox.innerHTML = `
+            <p style="font-size:0.8rem; color:var(--text-dim);">${isAr ? 'كود التفعيل الخاص بك:' : 'Your License Key:'}</p>
+            <code style="color:#34d399; font-size:1.2rem; font-weight:bold;">${buyerCode}</code>
+        `;
+
+        document.getElementById('pay-flow').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+    }
+
+    window.onclick = (e) => { if (e.target.className === 'modal') closeModal(); }
+</script>
+
+</body>
+</html>
