@@ -207,34 +207,32 @@
 
 function startProcessing() {
         const isAr = document.documentElement.lang === 'ar';
-        const refId = "REF-" + Math.random().toString(36).substr(2, 8).toUpperCase();
-        
-        // تجهيز بيانات الـ Issue لفتحها في صفحة جديدة (تنبيه فقط)
-        const issueTitle = encodeURIComponent(`New Payment Notification: ${refId}`);
-        const issueBody = encodeURIComponent(`### 📢 إشعار دفع جديد\n\n**الخطة:** ${selectedPlan}\n**السعر:** ${selectedPrice} SAR\n**رقم المرجع:** ${refId}\n\n**حالة الطلب:** بانتظار العميل لفتح تكت وإرسال الصورة في ديسكورد.`);
+        // توليد رقم مرجع مميز للطلب لسهولة المراجعة في التكت
+        const refId = "911-" + Math.random().toString(36).substr(2, 8).toUpperCase();
 
-        // رابط لفتح الـ Issue في مستودعك
-        const githubIssueUrl = `https://github.com/${OWNER}/${REPO}/issues/new?title=${issueTitle}&body=${issueBody}`;
-
-        // فتح صفحة الـ Issue للمشتري ليضغط Submit
-        window.open(githubIssueUrl, '_blank');
-
-        // إظهار تعليمات التكت للمشتري في الصفحة
+        // تحديث واجهة المستخدم لإظهار التعليمات
         document.getElementById('ref-id').innerText = refId;
         
         const successMsg = document.getElementById('success-msg');
         successMsg.innerHTML = `
-            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
-            <h3>${isAr ? 'تم تسجيل طلبك!' : 'Request Logged!'}</h3>
-            <span class="ref-badge">${refId}</span>
-            <p style="margin: 15px 0; color: #94a3b8; line-height: 1.6;">
-                ${isAr ? 'يرجى التوجه لسيرفر الديسكورد وفتح "تكت" وإرسال صورة التحويل مع رقم المرجع الموضح أعلاه.' : 'Please go to Discord, open a ticket, and send the transfer receipt with the Ref ID shown above.'}
+            <div style="font-size: 50px; margin-bottom: 10px;">⏳</div>
+            <h3 style="color: #f8fafc; margin-bottom: 10px;">
+                ${isAr ? 'الخطوة الأخيرة!' : 'Final Step!'}
+            </h3>
+            <div style="background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #3b82f6; margin-bottom: 20px;">
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">${isAr ? 'رقم مرجع الطلب:' : 'Your Order Ref:'}</p>
+                <code style="font-size: 1.3rem; color: #34d399; font-weight: 800; letter-spacing: 1px;">${refId}</code>
+            </div>
+            <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 25px;">
+                ${isAr ? 'من فضلك أرسل صورة الإيصال (التحويل) مع رقم المرجع أعلاه عبر تكت في سيرفر الديسكورد.' : 'Please send the transfer receipt along with the Ref ID above via a ticket in our Discord server.'}
             </p>
-            <a href="https://discord.gg/5-5" class="btn" style="background:#5865F2; text-decoration:none; display:block; margin-top:20px;">
-                ${isAr ? 'انتقل للديسكورد (فتح تكت)' : 'Go to Discord (Open Ticket)'}
+            <a href="https://discord.gg/5-5" target="_blank" class="btn" style="background:#5865F2; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20" style="filter: brightness(0) invert(1);">
+                ${isAr ? 'انتقل إلى الديسكورد' : 'Go to Discord'}
             </a>
         `;
 
+        // إخفاء نموذج الدفع وإظهار رسالة التوجيه
         document.getElementById('pay-flow').style.display = 'none';
         successMsg.style.display = 'block';
     }
