@@ -1,0 +1,28 @@
+name: 911 System Order Notifier
+on:
+  repository_dispatch:
+    types: [new_order]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    environment: DISCORD_WEBHOOK_URL  
+    steps:
+      - name: Send Notification to Discord
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "💰 طلب شراء جديد - 911 System",
+                   "color": 5814783,
+                   "fields": [
+                     {"name": "الخطة", "value": "${{ github.event.client_payload.plan }}", "inline": true},
+                     {"name": "السعر", "value": "${{ github.event.client_payload.price }} SAR", "inline": true},
+                     {"name": "المرجع (Ref)", "value": "${{ github.event.client_payload.refId }}", "inline": false},
+                     {"name": "الكود المُنتج", "value": "`${{ github.event.client_payload.license }}`", "inline": false}
+                   ],
+                   "footer": {"text": "تمت المعالجة آمنياً عبر GitHub Actions"}
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
