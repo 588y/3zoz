@@ -77,10 +77,6 @@
             border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.3s;
         }
         .btn:disabled { background: #334155; opacity: 0.6; cursor: not-allowed; }
-        input[type="file"] { margin: 15px 0; color: var(--text-dim); font-size: 0.8rem; width: 100%; }
-
-        #success-msg { display: none; text-align: center; }
-        .ref-badge { background: #1e293b; color: white; padding: 15px; border-radius: 12px; font-size: 1.2rem; font-weight: 800; margin: 15px 0; border: 1px solid #34d399; display: block; }
 
         .legal-box { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--border); }
         .legal-box h2 { color: var(--primary); margin: 30px 0 15px; }
@@ -106,7 +102,7 @@
     <section id="home">
         <div class="hero">
             <h1 data-en="Elite Software Hub" data-ar="مركز البرمجيات المتقدم">Elite Software Hub</h1>
-            <p data-en="Professional tools with automated delivery systems." data-ar="أدوات احترافية مع أنظمة تسليم تلقائية."></p>
+            <p data-en="Professional tools with manual verification for maximum security." data-ar="أدوات احترافية مع تحقق يدوي لأعلى معايير الأمان."></p>
         </div>
         <div class="grid">
             <div class="card">
@@ -119,6 +115,27 @@
                 <span class="price">150 <span class="cur-sym">SAR</span></span>
                 <button class="btn" data-en="Upgrade Now" data-ar="ترقية الآن" onclick="openPayment('Professional License', 150)">Upgrade Now</button>
             </div>
+        </div>
+    </section>
+
+    <section id="terms">
+        <div class="legal-box">
+            <h2 data-en="Terms of Service" data-ar="شروط الخدمة">Terms of Service</h2>
+            <p data-en="By using our services, you agree to follow our guidelines and safety protocols." data-ar="بواسطة استخدام خدماتنا، فإنك توافق على اتباع إرشاداتنا وبروتوكولات الأمان الخاصة بنا."></p>
+        </div>
+    </section>
+
+    <section id="privacy">
+        <div class="legal-box">
+            <h2 data-en="Privacy Policy" data-ar="سياسة الخصوصية">Privacy Policy</h2>
+            <p data-en="We respect your privacy. No sensitive data is collected during the purchase process." data-ar="نحن نحترم خصوصيتك. لا يتم جمع أي بيانات حساسة أثناء عملية الشراء."></p>
+        </div>
+    </section>
+
+    <section id="refund">
+        <div class="legal-box">
+            <h2 data-en="Refund Policy" data-ar="سياسة الاسترداد">Refund Policy</h2>
+            <p data-en="Refunds are processed through our Discord support team after manual review." data-ar="يتم معالجة عمليات الاسترداد من خلال فريق دعم الديسكورد بعد المراجعة اليدوية."></p>
         </div>
     </section>
 
@@ -140,21 +157,18 @@
             <button id="proc-btn" class="btn" onclick="startProcessing()" data-en="Confirm Payment" data-ar="تأكيد عملية الدفع">Confirm Payment</button>
         </div>
 
-        <div id="success-msg" style="display: none; text-align: center;">
-            </div>
+        <div id="success-msg" style="display: none; text-align: center;"></div>
     </div>
 </div>
 
 <script>
-    // --- إعدادات GitHub الآمنة ---
-    const OWNER = "588y";
-    const REPO = "3zoz";
-
     function updateLanguageUI(lang) {
         const isAr = lang === 'ar';
         document.body.dir = isAr ? 'rtl' : 'ltr';
         document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-        document.getElementById('langBtn').innerText = isAr ? 'English' : 'العربية';
+        const langBtn = document.getElementById('langBtn');
+        if (langBtn) langBtn.innerText = isAr ? 'English' : 'العربية';
+        
         document.querySelectorAll('[data-en]').forEach(el => {
             el.innerText = isAr ? el.getAttribute('data-ar') : el.getAttribute('data-en');
         });
@@ -162,21 +176,26 @@
     }
 
     function toggleLang() {
-        const newLang = document.body.dir === 'rtl' ? 'en' : 'ar';
+        const newLang = document.documentElement.dir === 'rtl' ? 'en' : 'ar';
         updateLanguageUI(newLang);
     }
 
     function showSection(id) {
         const sections = document.querySelectorAll('section');
         sections.forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(id) || document.getElementById('home');
-        target.classList.add('active');
-        if(window.location.hash !== '#' + id) history.pushState(null, null, '#' + id);
+        const target = document.getElementById(id);
+        if (target) {
+            target.classList.add('active');
+        } else {
+            document.getElementById('home').classList.add('active');
+        }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        updateLanguageUI(document.documentElement.lang || 'en');
-        showSection(window.location.hash.replace('#','') || 'home');
+        const initialLang = localStorage.getItem('preferredLang') || (navigator.language.startsWith('ar') ? 'ar' : 'en');
+        updateLanguageUI(initialLang);
+        const hash = window.location.hash.replace('#', '') || 'home';
+        showSection(hash);
     });
 
     function copyIBAN() {
@@ -184,44 +203,44 @@
         alert(document.documentElement.lang === 'ar' ? "تم نسخ الآيبان!" : "IBAN Copied!");
     }
 
-    let selectedPlan = "";
-    let selectedPrice = 0;
-
     function openPayment(name, price) {
-        selectedPlan = name;
-        selectedPrice = price;
         document.getElementById('m-title').innerText = name + " - " + price + " SAR";
         document.getElementById('paymentModal').style.display = 'block';
         document.getElementById('pay-flow').style.display = 'block';
         document.getElementById('success-msg').style.display = 'none';
-        document.getElementById('receipt').value = '';
     }
 
-    function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
-    function checkUpload() { document.getElementById('proc-btn').disabled = !document.getElementById('receipt').files.length; }
+    function closeModal() { 
+        document.getElementById('paymentModal').style.display = 'none'; 
+    }
 
-function startProcessing() {
-    const isAr = document.documentElement.lang === 'ar';
-    const successMsg = document.getElementById('success-msg');
+    function startProcessing() {
+        const isAr = document.documentElement.lang === 'ar';
+        const successMsg = document.getElementById('success-msg');
 
-    successMsg.innerHTML = `
-        <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
-        <h3 style="color: #f8fafc; margin-bottom: 15px;">
-            ${isAr ? 'تأكيد الدفع' : 'Payment Confirmation'}
-        </h3>
-        <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 25px; font-size: 1rem;">
-            ${isAr ? 'لأسباب أمنية يرجى فتح تكت في الديسكورد وإرسال صورة الإيصال هناك، وسيقوم فريق العمل بتسليمك المنتج فوراً.' : 'For security reasons, please open a ticket on Discord and send your receipt there. Our team will deliver your product immediately.'}
-        </p>
-        <a href="https://discord.gg/5-5" target="_blank" class="btn" style="background:#5865F2; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20" style="filter: brightness(0) invert(1);">
-            ${isAr ? 'فتح تكت في الديسكورد' : 'Open Ticket on Discord'}
-        </a>
-    `;
+        successMsg.innerHTML = `
+            <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
+            <h3 style="color: #f8fafc; margin-bottom: 15px;">
+                ${isAr ? 'بانتظار التأكيد' : 'Awaiting Confirmation'}
+            </h3>
+            <p style="color: #94a3b8; line-height: 1.8; margin-bottom: 25px; font-size: 1rem;">
+                ${isAr ? 'لأسباب أمنية يرجى فتح تكت في الديسكورد وإرسال صورة الإيصال هناك، وسيقوم فريق العمل بتسليمك المنتج فوراً.' : 'For security reasons, please open a ticket on Discord and send your receipt there. Our team will deliver your product immediately.'}
+            </p>
+            <a href="https://discord.gg/5-5" target="_blank" class="btn" style="background:#5865F2; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20" style="filter: brightness(0) invert(1);">
+                ${isAr ? 'فتح تكت في الديسكورد' : 'Open Ticket on Discord'}
+            </a>
+        `;
 
-    // تبديل الواجهة
-    document.getElementById('pay-flow').style.display = 'none';
-    successMsg.style.display = 'block';
-}
+        document.getElementById('pay-flow').style.display = 'none';
+        successMsg.style.display = 'block';
+    }
+
+    // إغلاق النافذة عند الضغط خارجها
+    window.onclick = function(event) {
+        const modal = document.getElementById('paymentModal');
+        if (event.target == modal) closeModal();
+    }
 </script>
 
 </body>
