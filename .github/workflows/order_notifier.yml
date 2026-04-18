@@ -1,12 +1,12 @@
-name: 911 System Order Notifier
+name: Secure Order Notifier
 on:
-  repository_dispatch:
-    types: [new_order]
+  issues:
+    types: [opened]
 
 jobs:
   notify:
+    if: startsWith(github.event.issue.title, 'Order:')
     runs-on: ubuntu-latest
-    environment: DISCORD_WEBHOOK_URL  
     steps:
       - name: Send Notification to Discord
         run: |
@@ -14,15 +14,14 @@ jobs:
                -X POST \
                -d '{
                  "embeds": [{
-                   "title": "💰 طلب شراء جديد - 911 System",
-                   "color": 5814783,
-                   "fields": [
-                     {"name": "الخطة", "value": "${{ github.event.client_payload.plan }}", "inline": true},
-                     {"name": "السعر", "value": "${{ github.event.client_payload.price }} SAR", "inline": true},
-                     {"name": "المرجع (Ref)", "value": "${{ github.event.client_payload.refId }}", "inline": false},
-                     {"name": "الكود المُنتج", "value": "`${{ github.event.client_payload.license }}`", "inline": false}
-                   ],
-                   "footer": {"text": "تمت المعالجة آمنياً عبر GitHub Actions"}
+                   "title": "💰 طلب شراء جديد آمن",
+                   "description": "${{ github.event.issue.body }}",
+                   "color": 5814783
                  }]
                }' \
                ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Close Issue
+        run: gh issue close ${{ github.event.issue.number }} --comment "Order Processed"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
